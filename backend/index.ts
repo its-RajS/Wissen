@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./utils/db";
+import { ErrorMiddleware } from "./middleware/error";
 
 //?config dotenv and port no.
 dotenv.config();
@@ -47,3 +48,5 @@ app.get("/test", (req: Request, res: Response, next: NextFunction) => {
 
 //* Make our server listen
 app.listen(port, () => console.log(`Server is running on this port:${port}`));
+
+app.use(ErrorMiddleware);
