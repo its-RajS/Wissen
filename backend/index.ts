@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./utils/db";
 import { ErrorMiddleware } from "./middleware/error";
+import userRouter from "./routes/user.route";
 
 //?config dotenv and port no.
 dotenv.config();
@@ -29,6 +30,10 @@ app.use(
     credentials: true,
   })
 );
+
+//?
+app.use("/api/v1", userRouter);
+
 //? Test api
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
