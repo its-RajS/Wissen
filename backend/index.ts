@@ -31,18 +31,10 @@ app.use(
   })
 );
 
-//?
+//! Router
 app.use("/api/v1", userRouter);
 
-//? Test api
-app.get("/test", (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({
-    success: true,
-    message: "API working 🟢🟢🟢",
-  });
-});
-
-//! unknown routes
+// ! unknown routes
 // app.all("*", (req: Request, res: Response, next: NextFunction) => {
 //   const err = Error(`Route ${req.originalUrl} not found 🔴🔴🔴`) as Error & {
 //     statusCode?: number;

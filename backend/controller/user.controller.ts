@@ -1,22 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
-import userModel, { IUser } from "../models/user.model";
+import userModel from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import jwt, { Secret } from "jsonwebtoken";
 import dotenv from "dotenv";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
+import {
+  IActivationRequest,
+  IActivationToken,
+  IRegistrationBody,
+} from "../types/user.types";
+import { IUser } from "../types/model.types";
 
 dotenv.config();
-
-//?Types of registered user
-interface IRegistrationBody {
-  name: string;
-  email: string;
-  password: string;
-  avatar?: string;
-}
 
 //! New User
 export const regHandler = asyncHandler(
@@ -66,12 +64,6 @@ export const regHandler = asyncHandler(
   }
 );
 
-//? Tyoe for the activaion token
-interface IActivationToken {
-  token: string;
-  activateCode: string;
-}
-
 //? Activation token
 export const ActivationToken = (user: any): IActivationToken => {
   const activateCode = Math.floor(1000 + Math.random() * 9000).toString();
@@ -86,12 +78,6 @@ export const ActivationToken = (user: any): IActivationToken => {
 
   return { token, activateCode };
 };
-
-//? Type for the activaion token
-interface IActivationRequest {
-  activationToken: string;
-  activationCode: string;
-}
 
 export const activateUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

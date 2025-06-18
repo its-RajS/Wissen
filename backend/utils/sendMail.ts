@@ -2,15 +2,9 @@ import nodemailer, { Transporter } from "nodemailer";
 import path from "path";
 import ejs from "ejs";
 import dotenv from "dotenv";
+import { Email } from "../types/mail.types";
 
 dotenv.config();
-
-interface Email {
-  email: string;
-  subject: string;
-  templete: string;
-  data: { [key: string]: any };
-}
 
 const sendMail = async (emailData: Email): Promise<void> => {
   const transporter: Transporter = nodemailer.createTransport({
