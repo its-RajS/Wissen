@@ -34,8 +34,9 @@ export const ErrorMiddleware = (
     err = new ErrorHandler(message, 400);
   }
 
+  console.error("🔥 ErrorMiddleware caught:", err);
   res.status(err.statusCode).json({
-    success: true,
+    success: false,
     message: err.message,
   });
 };

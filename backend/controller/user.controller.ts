@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
-import userModel from "../models/user.model";
+import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import jwt, { Secret } from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -86,3 +86,46 @@ export const ActivationToken = (user: any): IActivationToken => {
 
   return { token, activateCode };
 };
+
+//? Type for the activaion token
+interface IActivationRequest {
+  activationToken: string;
+  activationCode: string;
+}
+
+export const activateUser = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { activationToken, activationCode } =
+        req.body as IActivationRequest;
+
+      const newUser: { user: IUser; activateCode: string } = jwt.verify(
+        activationToken,
+        process.env.ACTIVATION_SECRET_KEY as string
+      ) as { user: IUser; activateCode: string };
+
+      console.log("🟢🟢Decoded user from token:", newUser);
+
+      if (newUser.activateCode !== activationCode)
+        return next(new ErrorHandler("Invalid activation code", 400));
+
+      const { name, email, password } = newUser.user;
+
+      const userExist = await userModel.findOne({ email });
+
+      if (userExist) return next(new ErrorHandler("Email already exist", 400));
+
+      await userModel.create({
+        name,
+        email,
+        password,
+      });
+
+      res.status(201).json({
+        success: true,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
