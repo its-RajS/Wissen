@@ -1,6 +1,10 @@
 import mongoose, { Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import { IUser } from "../types/model.types";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 //? RegEx for email pattern
 const emailPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -50,6 +54,16 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
   { timestamps: true }
 );
 
+//! Auth(Login/Signup)
+//? Sign access token
+userSchema.methods.SignAccessToken = function () {
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "");
+};
+//? Sign refresh token
+userSchema.methods.SignRefreshToken = function () {
+  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "");
+};
+
 //? Secure the password before saving in db with hook
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) next();
@@ -62,7 +76,7 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.comparePassword = async function (
   enteredPass: string
 ): Promise<boolean> {
-  return await bcrypt.compare(enteredPass, this.passsword);
+  return await bcrypt.compare(enteredPass, this.password);
 };
 
 const userModel: Model<IUser> = mongoose.model("User", userSchema);
