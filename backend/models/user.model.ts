@@ -1,6 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
-import { IUser } from "../types/model.types";
+import { IUser } from "../@types/model";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 

@@ -2,7 +2,7 @@ import nodemailer, { Transporter } from "nodemailer";
 import path from "path";
 import ejs from "ejs";
 import dotenv from "dotenv";
-import { Email } from "../types/mail.types";
+import { Email } from "../@types/mail";
 
 dotenv.config();
 

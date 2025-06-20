@@ -11,10 +11,11 @@ import {
   IActivationRequest,
   IActivationToken,
   IRegistrationBody,
-} from "../types/user.types";
-import { IUser } from "../types/model.types";
-import { ILoginRequest } from "../types/auth.types";
+} from "../@types/user";
+import { IUser } from "../@types/model";
+import { ILoginRequest } from "../@types/auth";
 import { sendToken } from "../utils/jwt";
+import { redis } from "../utils/redis";
 
 dotenv.config();
 
@@ -144,6 +145,9 @@ export const logoutUser = asyncHandler(
     try {
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
+      //?delete the cache from redis
+      const userId = req.user?._id?.toString() || "";
+      redis.del(userId);
       res.status(201).json({
         success: true,
         message: "Logged Successfully",

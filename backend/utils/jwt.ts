@@ -1,5 +1,5 @@
-import { IToken } from "../types/auth.types";
-import { IUser } from "../types/model.types";
+import { IToken } from "../@types/auth";
+import { IUser } from "../@types/model";
 import { Response } from "express";
 import dotenv from "dotenv";
 import { redis } from "./redis";
