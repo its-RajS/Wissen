@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
+import cloudinary from "cloudinary";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./utils/db";
@@ -9,6 +10,13 @@ import userRouter from "./routes/user.route";
 //?config dotenv and port no.
 dotenv.config();
 const port = process.env.PORT || 8000;
+
+//! configure the cloudinary
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
 
 //? configure the db
 connectDB();

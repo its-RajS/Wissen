@@ -12,3 +12,10 @@ export interface IToken {
   sameSite: "lax" | "strict" | "none" | undefined;
   secure?: boolean;
 }
+
+//? Social auth
+export interface ISocialAuth {
+  email: string;
+  name: string;
+  avatar: string;
+}

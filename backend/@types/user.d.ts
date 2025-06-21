@@ -17,3 +17,18 @@ export interface IActivationRequest {
   activationToken: string;
   activationCode: string;
 }
+
+//? Type to upadate user info
+export interface IUpdateUserInfo {
+  name: string;
+  email: string;
+}
+
+export interface IUpdatePassword {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface IUpdateAvatar {
+  avatar: string;
+}

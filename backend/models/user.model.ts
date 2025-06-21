@@ -29,7 +29,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Please enter your password"],
+      // required: [true, "Please enter your password"], //?as in social auth password is not required
       minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
@@ -57,11 +57,15 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 //! Auth(Login/Signup)
 //? Sign access token
 userSchema.methods.SignAccessToken = function () {
-  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "");
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "", {
+    expiresIn: "5m",
+  });
 };
 //? Sign refresh token
 userSchema.methods.SignRefreshToken = function () {
-  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "");
+  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "", {
+    expiresIn: "3d",
+  });
 };
 
 //? Secure the password before saving in db with hook
