@@ -4,6 +4,7 @@ import {
   editCourse,
   getAllCourse,
   getSingleCourse,
+  getUserCourse,
   uploadCourse,
 } from "../controller/course.controller";
 
@@ -25,5 +26,7 @@ courseRouter.put(
 
 courseRouter.get("/getCourse/:id", getSingleCourse);
 courseRouter.get("/getCourse", getAllCourse);
+
+courseRouter.get("/getUserCourseContent/:id", isAuthenticate, getUserCourse);
 
 export default courseRouter;

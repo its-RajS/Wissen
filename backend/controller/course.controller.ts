@@ -120,3 +120,35 @@ export const getAllCourse = asyncHandler(
     }
   }
 );
+
+//? Get single course --> only to valid user/ purchased users
+export const getUserCourse = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userCourse = req.user?.courses;
+      const courseId = req.params?.id;
+      const userCourseExits = userCourse?.find(
+        (course: any) => course._id.toString() === courseId
+      );
+
+      if (!userCourseExits)
+        return next(
+          new ErrorHandler(
+            "You are not eligible to access this course. Kindly purchase it ",
+            500
+          )
+        );
+
+      //? if course exists then return course data
+      const course = await courseModel.findById(courseId);
+      const courseContent = course?.courseData;
+
+      res.status(201).json({
+        success: true,
+        courseContent,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
