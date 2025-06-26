@@ -4,6 +4,7 @@ import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary";
 import { createCourse } from "../services/course.service";
 import courseModel from "../models/course.model";
+import { redis } from "../utils/redis";
 
 //? Upload Course
 export const uploadCourse = asyncHandler(
@@ -62,6 +63,58 @@ export const editCourse = asyncHandler(
         success: true,
         course,
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+//? Get single courses --> anyone can access it
+export const getSingleCourse = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const courseData = await courseModel
+        .findById(req.params.id)
+        .select(
+          "-courseData.videoUrl -courseData.videoPlayer -courseData.links -courseData.suggestion -courseData.question"
+        );
+
+      res.status(201).json({
+        success: true,
+        courseData,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+//? Get all courses --> anyone can access it
+export const getAllCourse = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      //! Redis cache to aviod server load
+      const isRedisCached = await redis.get("allCourses");
+      if (isRedisCached) {
+        const courses = JSON.parse(isRedisCached);
+        res.status(201).json({
+          success: true,
+          courses,
+        });
+      } else {
+        const courseData = await courseModel
+          .find()
+          .select(
+            "-courseData.videoUrl -courseData.videoPlayer -courseData.links -courseData.suggestion -courseData.question"
+          );
+
+        await redis.set("allCourses", JSON.stringify(courseData));
+
+        res.status(201).json({
+          success: true,
+          courseData,
+        });
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
