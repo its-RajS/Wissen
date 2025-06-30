@@ -268,3 +268,93 @@ export const addCommentReplies = asyncHandler(
     }
   }
 );
+
+//? Add review in a course
+export const addReview = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userCourses = req.user?.courses;
+      const courseId = req.params.id;
+
+      //* check if the courses is purchased by the user
+      const userCourseExits = userCourses?.find(
+        (data: any) => data._id.toString() === courseId.toString()
+      );
+      if (!userCourseExits)
+        return next(new ErrorHandler("Kindly purchase the course first", 400));
+
+      const course = await courseModel.findById(courseId);
+
+      const { review, rating }: IAddReview = req.body;
+
+      const reviewData: any = {
+        user: req.user,
+        rating,
+        comment: review,
+      };
+
+      course?.reviews.push(reviewData);
+
+      let avg = 0;
+      course?.reviews.forEach((rev: any) => {
+        avg += rev.rating;
+      });
+
+      if (course) course.rating = avg / course.reviews.length;
+
+      await course?.save();
+
+      const notification: any = {
+        title: "New Review",
+        message: `${req.user?.name} has given a review for your course ${course?.name}`,
+      };
+
+      //?Create notification
+
+      res.status(200).json({
+        success: true,
+        message: "Review added successfully",
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+//? Admin only review reply
+export const adminReviewReply = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { reviewReply, reviewId, courseId }: IAdminReviewReply = req.body;
+
+      const course = await courseModel.findById(courseId);
+      if (!course) return next(new ErrorHandler("No such course exits", 400));
+
+      const review = course.reviews.find(
+        (data: any) => data._id.toString() === reviewId
+      );
+      if (!review) return next(new ErrorHandler("No such review exits", 400));
+
+      const replyData: any = {
+        user: req.user,
+        comment: reviewReply,
+      };
+      if (!review.commentReplies) {
+        review.commentReplies = [];
+      }
+
+      review.commentReplies.push(replyData);
+
+      await course?.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Review added successfully",
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
