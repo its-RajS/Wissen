@@ -37,7 +37,7 @@ const courseDataSchema = new Schema<ICourseData>({
   videoSection: String,
   links: [linkSchema],
   suggestion: String,
-  question: [commentSchema],
+  comment: [commentSchema],
 });
 
 const courseSchema = new Schema<ICourse>({

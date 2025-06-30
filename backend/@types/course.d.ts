@@ -1,8 +1,9 @@
 import { Document } from "mongoose";
+import { IUser } from "./model";
 
 //? Comments
 interface IComments extends Document {
-  user: object;
+  user: IUser;
   comment: string;
   commentReplies: IComments[];
 }
@@ -32,7 +33,7 @@ interface ICourseData extends Document {
   videoThumbnail: object;
   links: ILinks[];
   suggestion: string;
-  question: IComments[];
+  comment: IComments[];
 }
 
 //? Course

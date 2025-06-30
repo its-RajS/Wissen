@@ -5,6 +5,10 @@ import cloudinary from "cloudinary";
 import { createCourse } from "../services/course.service";
 import courseModel from "../models/course.model";
 import { redis } from "../utils/redis";
+import mongoose from "mongoose";
+import path from "path";
+import ejs from "ejs";
+import sendMail from "../utils/sendMail";
 
 //? Upload Course
 export const uploadCourse = asyncHandler(
@@ -146,6 +150,118 @@ export const getUserCourse = asyncHandler(
       res.status(201).json({
         success: true,
         courseContent,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+//? Add comments in a course
+export const addComments = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { comment, courseId, courseDataId }: IAddComments = req.body;
+      const course = await courseModel.findById(courseId);
+
+      if (!mongoose.Types.ObjectId.isValid(courseDataId))
+        return next(new ErrorHandler("Invalid course Id", 400));
+
+      const courseData = course?.courseData?.find((data: any) =>
+        data._id.equals(courseDataId)
+      );
+      if (!courseData) return next(new ErrorHandler("Invalid course Id", 400));
+
+      //! Add our comment obj
+      const newComment = <any>{
+        user: req.user,
+        comment,
+        commentReplies: [],
+      };
+
+      //* add this to our course
+      courseData.comment.push(newComment);
+
+      await course?.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Comment added successfully",
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+//? Add comment replies in a course
+export const addCommentReplies = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {
+        commentReplie,
+        courseId,
+        courseDataId,
+        commentId,
+      }: IAddCommentReplies = req.body;
+      const course = await courseModel.findById(courseId);
+
+      if (!mongoose.Types.ObjectId.isValid(courseDataId))
+        return next(new ErrorHandler("Invalid course Id", 400));
+
+      const courseData = course?.courseData?.find((data: any) =>
+        data._id.equals(courseDataId)
+      );
+      if (!courseData) return next(new ErrorHandler("Invalid course Id", 400));
+
+      //* get our comment
+      const comment = courseData.comment.find((data: any) =>
+        data._id.equals(commentId)
+      );
+      if (!comment) return next(new ErrorHandler("Invalid comment", 400));
+
+      //! Add our comment reply obj
+      const newCommentReply = <any>{
+        user: req.user,
+        commentReplie,
+      };
+
+      //* add this to our course
+      comment?.commentReplies.push(newCommentReply);
+
+      await course?.save();
+
+      if (req.user?._id === comment.user._id) {
+        //? create Notification
+      } else {
+        const data = {
+          name: comment.user.name,
+          title: courseData.title,
+          originalComment: comment.comment,
+          commentReplie: newCommentReply.commentReplie,
+        };
+
+        const html = await ejs.renderFile(
+          path.join(__dirname, "../mails/commentReply.ejs"),
+          data
+        );
+
+        try {
+          await sendMail({
+            email: comment.user.email,
+            subject: "Comment Reply",
+            templete: "commentReply.ejs",
+            data: data,
+          });
+        } catch (error: any) {
+          return next(new ErrorHandler(error.message, 500));
+        }
+      }
+      res.status(200).json({
+        success: true,
+        message: "Comment added successfully",
+        course,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));

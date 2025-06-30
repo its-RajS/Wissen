@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>New Reply to Your Comment</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        background: #fff;
+        max-width: 600px;
+        margin: 40px auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        padding: 32px;
+      }
+      .header {
+        font-size: 22px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 16px;
+      }
+      .content {
+        font-size: 16px;
+        color: #444;
+        margin-bottom: 24px;
+      }
+      .comment,
+      .reply {
+        background: #f1f1f1;
+        border-radius: 5px;
+        padding: 12px;
+        margin: 8px 0;
+        font-style: italic;
+      }
+      .footer {
+        font-size: 13px;
+        color: #888;
+        margin-top: 32px;
+        text-align: center;
+      }
+      .btn {
+        display: inline-block;
+        background: #007bff;
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 4px;
+        text-decoration: none;
+        margin-top: 18px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">You have a new reply to your comment!</div>
+      <div class="content">
+        Hi <%= name %>,
+        <br /><br />
+        Someone has replied to your comment on the course "<%= title %>".
+        <br /><br />
+        <strong>Your comment:</strong>
+        <div class="comment"><%= originalComment %></div>
+        <strong>Reply:</strong>
+        <div class="reply"><%= commentReplie %></div>
+        <a class="btn">View Reply</a>
+      </div>
+      <div class="footer">
+        Thank you for being part of our learning community.<br />
+        &copy; <%= new Date().getFullYear() %> Your Course Platform
+      </div>
+    </div>
+  </body>
+</html>
