@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" style="margin: 0; padding: 0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Order Confirmation - <%= order.courseName %></title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f6f8fa;
+        margin: 0;
+        padding: 0;
+        color: #222;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        padding: 32px 28px 24px 28px;
+      }
+      .header {
+        text-align: center;
+        padding-bottom: 18px;
+        border-bottom: 1px solid #ececec;
+      }
+      .header h1 {
+        color: #2d7ff9;
+        margin: 0 0 6px 0;
+        font-size: 1.7em;
+        letter-spacing: 0.5px;
+      }
+      .order-details {
+        margin: 28px 0 18px 0;
+      }
+      .order-details h2 {
+        font-size: 1.2em;
+        color: #444;
+        margin-bottom: 10px;
+      }
+      .order-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 18px;
+      }
+      .order-table td {
+        padding: 7px 0;
+        font-size: 1em;
+      }
+      .order-table .label {
+        color: #888;
+        width: 40%;
+        font-weight: 500;
+      }
+      .order-table .value {
+        color: #222;
+        font-weight: 400;
+      }
+      .footer {
+        text-align: center;
+        color: #888;
+        font-size: 0.97em;
+        margin-top: 24px;
+      }
+      .success-icon {
+        font-size: 2.5em;
+        color: #2ecc71;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="success-icon">✔️</div>
+        <h1>Order Confirmed!</h1>
+        <p>Thank you for your purchase.</p>
+      </div>
+      <div class="order-details">
+        <h2>Your Course Order Details</h2>
+        <table class="order-table">
+          <tr>
+            <td class="label">Order ID:</td>
+            <td class="value"><%= order._id %></td>
+          </tr>
+          <tr>
+            <td class="label">Course Name:</td>
+            <td class="value"><%= order.courseName %></td>
+          </tr>
+          <tr>
+            <td class="label">Description:</td>
+            <td class="value"><%= order.courseDescription %></td>
+          </tr>
+          <tr>
+            <td class="label">Price:</td>
+            <td class="value">₹<%= order.price %></td>
+          </tr>
+          <tr>
+            <td class="label">Order Date:</td>
+            <td class="value"><%= order.date %></td>
+          </tr>
+        </table>
+      </div>
+      <div>
+        <p>
+          You now have access to your course. We hope you enjoy learning with
+          us!<br />
+          If you have any questions, feel free to reply to this email.
+        </p>
+      </div>
+      <div class="footer">
+        &copy; <%= new Date().getFullYear() %> Your Learning Platform. All
+        rights reserved.
+      </div>
+    </div>
+  </body>
+</html>

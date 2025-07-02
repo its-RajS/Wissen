@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import path from "path";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail";
+import notificationModel from "../models/notification.model";
 
 //? Upload Course
 export const uploadCourse = asyncHandler(
@@ -132,7 +133,7 @@ export const getUserCourse = asyncHandler(
       const userCourse = req.user?.courses;
       const courseId = req.params?.id;
       const userCourseExits = userCourse?.find(
-        (course: any) => course._id.toString() === courseId
+        (course: any) => course.courseId.toString() === courseId
       );
 
       if (!userCourseExits)
@@ -181,6 +182,12 @@ export const addComments = asyncHandler(
 
       //* add this to our course
       courseData.comment.push(newComment);
+
+      await notificationModel.create({
+        userId: req.user?._id,
+        title: "New Comment",
+        message: `You have a new comment from ${req.user?.name} for ${courseData?.title}`,
+      });
 
       await course?.save();
 
@@ -233,7 +240,11 @@ export const addCommentReplies = asyncHandler(
       await course?.save();
 
       if (req.user?._id === comment.user._id) {
-        //? create Notification
+        await notificationModel.create({
+          userId: req.user?._id,
+          title: "New comment reply",
+          message: `You have a new reply from ${req.user?.name} for ${courseData?.title} `,
+        });
       } else {
         const data = {
           name: comment.user.name,
@@ -310,6 +321,11 @@ export const addReview = asyncHandler(
       };
 
       //?Create notification
+      await notificationModel.create({
+        userId: req.user?._id,
+        title: "New order",
+        message: `You have a new order from ${req.user?.name} for ${course?.name} `,
+      });
 
       res.status(200).json({
         success: true,
