@@ -10,3 +10,13 @@ export const createCourse = asyncHandler(async (data: any, res: Response) => {
     course,
   });
 });
+
+//? Get all courses
+export const getAllcoursesService = async (res: Response) => {
+  const courses = await courseModel.find().sort({ createdAt: -1 });
+
+  res.status(201).json({
+    success: true,
+    courses,
+  });
+};

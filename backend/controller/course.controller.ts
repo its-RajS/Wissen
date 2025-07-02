@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
 import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary";
-import { createCourse } from "../services/course.service";
+import { createCourse, getAllcoursesService } from "../services/course.service";
 import courseModel from "../models/course.model";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
@@ -323,8 +323,8 @@ export const addReview = asyncHandler(
       //?Create notification
       await notificationModel.create({
         userId: req.user?._id,
-        title: "New order",
-        message: `You have a new order from ${req.user?.name} for ${course?.name} `,
+        title: notification.title,
+        message: notification.message,
       });
 
       res.status(200).json({
@@ -371,6 +371,17 @@ export const adminReviewReply = asyncHandler(
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+//? Get all courses --> admin only
+export const getAlCoursesUsersAdmin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllcoursesService(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
     }
   }
 );

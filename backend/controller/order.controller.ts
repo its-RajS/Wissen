@@ -7,7 +7,7 @@ import sendMail from "../utils/sendMail";
 import { IOrder } from "../@types/order";
 import userModel from "../models/user.model";
 import courseModel from "../models/course.model";
-import { newOrder } from "../services/order.service";
+import { getAllOrderService, newOrder } from "../services/order.service";
 import notificationModel from "../models/notification.model";
 
 //? Create Order
@@ -86,6 +86,17 @@ export const createOrder = asyncHandler(
       newOrder(courseData, res, next);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+//? Get all orders --> admin only
+export const getAllOrderAdmin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllOrderService(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
     }
   }
 );

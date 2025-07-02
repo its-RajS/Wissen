@@ -1,9 +1,8 @@
 import { Response, Request, NextFunction } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
 import ErrorHandler from "../utils/ErrorHandler";
-import path from "path";
-import ejs from "ejs";
 import notificationModel from "../models/notification.model";
+import nodeCron from "node-cron";
 
 //? Get all notification --> only for admin
 export const getAllNotitfication = asyncHandler(
@@ -48,3 +47,16 @@ export const UpdateNotitfication = asyncHandler(
     }
   }
 );
+
+nodeCron.schedule("0 0 0 * * *", async () => {
+  const thirtyDaysNotification = new Date(
+    Date.now() - 30 * 24 * 60 * 60 * 1000
+  );
+  await notificationModel.deleteMany({
+    status: "read",
+    createdAt: {
+      $lt: thirtyDaysNotification,
+    },
+  });
+  console.log("Deleted read notification");
+});

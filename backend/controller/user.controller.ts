@@ -19,7 +19,7 @@ import { IUser } from "../@types/model";
 import { ILoginRequest, ISocialAuth } from "../@types/auth";
 import { accessTokenCookie, refreshTokenCookie, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/user.service";
+import { getAllUsers, getUserById } from "../services/user.service";
 import cloudinary from "cloudinary";
 
 dotenv.config();
@@ -354,6 +354,17 @@ export const updateUserAvatar = asyncHandler(
         message: "Avatar updated successfully",
         user,
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+//? Get all users --> admin only
+export const getAllUsersAdmin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUsers(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
