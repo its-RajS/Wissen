@@ -19,7 +19,11 @@ import { IUser } from "../@types/model";
 import { ILoginRequest, ISocialAuth } from "../@types/auth";
 import { accessTokenCookie, refreshTokenCookie, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getAllUsers, getUserById } from "../services/user.service";
+import {
+  getAllUsers,
+  getUserById,
+  updateUserRoleService,
+} from "../services/user.service";
 import cloudinary from "cloudinary";
 
 dotenv.config();
@@ -365,6 +369,18 @@ export const getAllUsersAdmin = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       getAllUsers(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+//! Update user role --> admin only
+export const updateUserRole_Admin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, role } = req.body;
+      updateUserRoleService(id, role, res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
