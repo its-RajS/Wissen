@@ -385,3 +385,24 @@ export const getAlCoursesUsersAdmin = asyncHandler(
     }
   }
 );
+
+//! Delete course --> admin only
+export const deleteCourse_Admin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const courseId = req.params.id;
+      const course = await courseModel.findById(courseId);
+      if (!course) return next(new ErrorHandler("Invalid course", 404));
+
+      await course.deleteOne({ courseId });
+      await redis.del(courseId);
+
+      res.status(201).json({
+        success: true,
+        message: `Course deleted successfully with id: ${courseId}`,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);

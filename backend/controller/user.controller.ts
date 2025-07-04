@@ -386,3 +386,24 @@ export const updateUserRole_Admin = asyncHandler(
     }
   }
 );
+
+//! Delete user --> admin only
+export const deleteUser_Admin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id;
+      const user = await userModel.findById(userId);
+      if (!user) return next(new ErrorHandler("Invalid user", 404));
+
+      await user.deleteOne({ userId });
+      await redis.del(userId);
+
+      res.status(201).json({
+        success: true,
+        message: `User deleted successfully with id: ${userId}`,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
