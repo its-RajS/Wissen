@@ -182,7 +182,10 @@ export const updateAccessToken = asyncHandler(
       if (!decode) return next(new ErrorHandler(message, 400));
 
       const session = await redis.get(decode.id as string);
-      if (!session) return next(new ErrorHandler(message, 400));
+      if (!session)
+        return next(
+          new ErrorHandler("Please login to access this resource", 400)
+        );
 
       const user = JSON.parse(session);
 
@@ -205,6 +208,9 @@ export const updateAccessToken = asyncHandler(
 
       res.cookie("access_token", accessToken, accessTokenCookie);
       res.cookie("refresh_token", refreshToken, refreshTokenCookie);
+
+      //* update our redis for advanced caching as without reload the user redis cache will expire in 7 days
+      await redis.set(user._id, JSON.stringify(user), "EX", 604800);
 
       res.status(201).json({
         success: true,
