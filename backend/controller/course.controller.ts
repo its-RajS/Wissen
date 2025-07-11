@@ -78,16 +78,30 @@ export const editCourse = asyncHandler(
 export const getSingleCourse = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const courseData = await courseModel
-        .findById(req.params.id)
-        .select(
-          "-courseData.videoUrl -courseData.videoPlayer -courseData.links -courseData.suggestion -courseData.question"
-        );
+      const courseId = req.params.id;
+      //! Redis cache to aviod server load
+      const isRedisCached = await redis.get(courseId);
+      if (isRedisCached) {
+        const course = JSON.parse(isRedisCached);
+        res.status(201).json({
+          success: true,
+          course,
+        });
+      } else {
+        const courseData = await courseModel
+          .findById(req.params.id)
+          .select(
+            "-courseData.videoUrl -courseData.videoPlayer -courseData.links -courseData.suggestion -courseData.question"
+          );
 
-      res.status(201).json({
-        success: true,
-        courseData,
-      });
+        //* advance cache for the popular courses
+        await redis.set(courseId, JSON.stringify(courseData), "EX", 604800);
+
+        res.status(201).json({
+          success: true,
+          courseData,
+        });
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
