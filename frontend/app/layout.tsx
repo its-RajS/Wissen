@@ -22,11 +22,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${poppins.variable} ${josefinSans.variable} antialiased !bg-white dark:bg-gradient-to-b dark:from-gray-800 dark:to-black duration-300`}
+        className={`${poppins.variable} ${josefinSans.variable} antialiased !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-800 dark:to-black duration-300`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem={true}
+        >
           {children}
         </ThemeProvider>
       </body>

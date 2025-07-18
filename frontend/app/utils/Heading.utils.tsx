@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { HeadProps } from "../@types/heading";
+import { HeadingProps } from "../@types/utils/heading";
 
 //? Define our meta data
-const Heading: FC<HeadProps> = ({ title, description, keywords }) => {
+const Heading: FC<HeadingProps> = ({ title, description, keywords }) => {
   return (
     <>
       <title>{title}</title>
