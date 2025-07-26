@@ -4,11 +4,18 @@ import { IHeader } from "../@types/components/header";
 import Link from "next/link";
 import NavItems from "../utils/NavItems";
 import ThemeSwitcher from "../utils/ThemeSwitcher";
-import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
+import {
+  HiOutlineAcademicCap,
+  HiOutlineMenuAlt3,
+  HiOutlineUserCircle,
+} from "react-icons/hi";
 import CustomModel from "../utils/CustomModel";
 import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
 import Verification from "./Auth/Verification";
+import { useSelector } from "react-redux";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 const Header: FC<IHeader> = ({
   activeItem,
@@ -19,6 +26,8 @@ const Header: FC<IHeader> = ({
 }) => {
   const [active, setActive] = useState(true);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const { user } = useSelector((state: any) => state.auth);
+  const { data } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,6 +37,8 @@ const Header: FC<IHeader> = ({
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  console.log(data);
 
   const handleCloseSidebar = (e: any) => {
     if (e.target.id === "screen") setOpenSidebar(false);
@@ -65,11 +76,31 @@ const Header: FC<IHeader> = ({
                   className="cursor-pointer dark:text-white text-black "
                 />
               </div>
-              <HiOutlineUserCircle
-                size={25}
-                className="hidden md:block cursor-pointer dark:text-white text-black "
-                onClick={() => setOpen(true)}
-              />
+              {user ? (
+                <Link href={"/profile"}>
+                  <Image
+                    src={
+                      user?.avatar ? (
+                        user.avatar
+                      ) : (
+                        <HiOutlineAcademicCap
+                          size={25}
+                          className="hidden md:block cursor-pointer dark:text-white text-black "
+                          onClick={() => setOpen(true)}
+                        />
+                      )
+                    }
+                    alt={user?.name}
+                    className="w-[30px] h-[30px] rounded-full cursor-pointer hover:opacity-80"
+                  />
+                </Link>
+              ) : (
+                <HiOutlineUserCircle
+                  size={25}
+                  className="hidden md:block cursor-pointer dark:text-white text-black "
+                  onClick={() => setOpen(true)}
+                />
+              )}
             </div>
           </div>
         </div>

@@ -34,7 +34,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
 //! cors
-const origin = process.env.ORIGIN;
+const origin = ['http://localhost:3000'];
 app.use(
   cors({
     origin: origin,
