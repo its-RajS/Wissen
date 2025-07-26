@@ -1,11 +1,13 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { AiFillEye, AiFillEyeInvisible, AiFillGithub } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { style } from "../../styles/style";
 import { ISignUp } from "../../@types/components/signUp";
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import toast from "react-hot-toast";
 
 const schema = Yup.object().shape({
   name: Yup.string().required("Required"),
@@ -16,6 +18,24 @@ const schema = Yup.object().shape({
 const SignUp: FC<ISignUp> = ({ setRoute }) => {
   const [show, setShow] = useState(false); //* To see the password
 
+  //? Redux
+  const [register, { data, isLoading, isSuccess, isError, error }] =
+    useRegisterMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      const message = data.message || "Registration successfull";
+      toast.success(message);
+      setRoute("Verification");
+    }
+    if (error) {
+      if ("data" in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message);
+      }
+    }
+  }, [isSuccess, error]);
+
   //* Form validation
   const formik = useFormik({
     initialValues: {
@@ -24,8 +44,9 @@ const SignUp: FC<ISignUp> = ({ setRoute }) => {
       password: "",
     },
     validationSchema: schema,
-    onSubmit: ({ name, email, password }) => {
-      setRoute("Verification");
+    onSubmit: async ({ name, email, password }) => {
+      const data = { name, email, password };
+      await register(data);
     },
   });
 
@@ -35,7 +56,7 @@ const SignUp: FC<ISignUp> = ({ setRoute }) => {
       <h1 className={`${style.title}`}>Join Wissen</h1>
       <form onSubmit={handleSubmit}>
         <div className="w-full relative ">
-          <label htmlFor="name" className={`${style.label}`}>
+          <label htmlFor="name" className={style.label}>
             Name
           </label>
           <input
@@ -55,7 +76,7 @@ const SignUp: FC<ISignUp> = ({ setRoute }) => {
           ) : null}
         </div>
         <div className="w-full relative mt-5 mb-1">
-          <label htmlFor="email" className={`${style.label}`}>
+          <label htmlFor="email" className={style.label}>
             Email
           </label>
           <input
@@ -75,7 +96,7 @@ const SignUp: FC<ISignUp> = ({ setRoute }) => {
           ) : null}
         </div>
         <div className="w-full relative mt-5 mb-1 ">
-          <label htmlFor="password" className={`${style.label}`}>
+          <label htmlFor="password" className={style.label}>
             Password
           </label>
           <input
@@ -108,13 +129,19 @@ const SignUp: FC<ISignUp> = ({ setRoute }) => {
           </span>
         ) : null}
         <div className="w-full mt-5">
-          <button
-            className={`${style.button} bg-blue-500 `}
-            type="submit"
-            value="SignUp"
-          >
-            Sign Up
-          </button>
+          {isLoading ? (
+            <button className={`${style.button} bg-gray-500 `} type="button">
+              Loading...
+            </button>
+          ) : (
+            <button
+              className={`${style.button} bg-blue-500 `}
+              type="submit"
+              value="SignUp"
+            >
+              Sign Up
+            </button>
+          )}
         </div>
         <br />
         <h5 className="text-center pt-2 font-Poppins text-[14px] ">
