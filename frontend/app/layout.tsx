@@ -11,12 +11,14 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-Poppins",
+  display: "swap",
 });
 
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-Josefin-Sans",
+  display: "swap",
 });
 
 export default function RootLayout({
