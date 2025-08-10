@@ -4,11 +4,7 @@ import { IHeader } from "../@types/components/header";
 import Link from "next/link";
 import NavItems from "../utils/NavItems";
 import ThemeSwitcher from "../utils/ThemeSwitcher";
-import {
-  HiOutlineAcademicCap,
-  HiOutlineMenuAlt3,
-  HiOutlineUserCircle,
-} from "react-icons/hi";
+import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
 import CustomModel from "../utils/CustomModel";
 import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
@@ -16,8 +12,12 @@ import Verification from "./Auth/Verification";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import {
+  useLogoutQuery,
+  useSocialAuthMutation,
+} from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
+import userDefault from "../../public/avatarDefault.png";
 
 const Header: FC<IHeader> = ({
   activeItem,
@@ -42,7 +42,10 @@ const Header: FC<IHeader> = ({
         });
       }
     }
-    if (isSuccess) toast.success("Login successfull");
+    if (data !== null) {
+      if (isSuccess) toast.success("Login Successfully");
+    }
+
     if (error) toast.error("Error");
   }, [data, user, isSuccess, error]);
 
@@ -96,17 +99,7 @@ const Header: FC<IHeader> = ({
               {user ? (
                 <Link href={"/profile"}>
                   <Image
-                    src={
-                      user?.avatar ? (
-                        user.avatar
-                      ) : (
-                        <HiOutlineAcademicCap
-                          size={25}
-                          className="hidden md:block cursor-pointer dark:text-white text-black "
-                          onClick={() => setOpen(true)}
-                        />
-                      )
-                    }
+                    src={user?.avatar ? user.avatar : userDefault}
                     alt={user?.name}
                     className="w-[30px] h-[30px] rounded-full cursor-pointer hover:opacity-80"
                   />
