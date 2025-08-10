@@ -48,7 +48,11 @@ const Profile: FC<IProfile> = ({ user }) => {
           logoutHandler={logoutHandler}
         />
       </div>
-      {active === 1 && <ProfileInfo />}
+      {active === 1 && (
+        <div className="w-full h-full bg-transparent ">
+          <ProfileInfo user={user} avatar={avatar} />
+        </div>
+      )}
     </div>
   );
 };
